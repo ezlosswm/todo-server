@@ -36,4 +36,4 @@ localhost:3000/todo?activity=<todo-item>
 
 [Github](https://github.com/EzlosSWM)
 
-[Email](ezlosswm@gmail.com)
+> Email: ezlosswm@gmail.com
