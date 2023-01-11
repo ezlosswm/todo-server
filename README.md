@@ -4,7 +4,9 @@
 ## Usage 
 ```bash
 # Installation 
-go get 
+go get https://github.com/EzlosSWM/todo-server
+
+cd todo-server
 
 # Makefile
 make run 
@@ -22,6 +24,22 @@ Currently, there is one that handles GET and POST requests:
 localhost:3000/todo 
 
 localhost:3000/todo?activity=<todo-item>
+```
+
+### Endpoints 
+*GET /todo* 
+- Returns all todo items
+
+*GET /todo/{id}*
+- Returns the specified todo item 
+
+*POST /todo*
+- Creates a new todo item 
+
+```JSON
+{
+    "todo": "test item"
+}
 ```
 
 
