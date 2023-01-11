@@ -1,9 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
+	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
+
+var listOfTodo TodoList
 
 type TodoItem struct {
 	ID          int       `json:"id"`
@@ -26,9 +33,19 @@ func NewTodo(activity string) *TodoList {
 	}
 }
 
-func (t *TodoList) GetItemByID(id int) *TodoList {
+func (t *TodoList) GetItemByID(r *http.Request) (*TodoItem, error) {
+	id, err := getID(r)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil
+	for itemID := range listOfTodo.Items {
+		if id == listOfTodo.Items[itemID].ID {
+			return &listOfTodo.Items[itemID], nil
+		}
+	}
+
+	return nil, fmt.Errorf("item with id %d not found", id)
 }
 
 func (t *TodoList) AddItem(item string) *TodoList {
@@ -44,4 +61,16 @@ func (t *TodoList) UpdateItem(item TodoList) *TodoList {
 
 func (t *TodoList) DeleteItemByID(item TodoList) *TodoList {
 	return nil
+}
+
+func getID(r *http.Request) (int, error) {
+	// retrieves the id from the post data
+	idFromUser := mux.Vars(r)["id"]
+
+	id, err := strconv.Atoi(idFromUser)
+	if err != nil {
+		return id, fmt.Errorf("%d not a valid id", id)
+	}
+
+	return id, nil
 }
