@@ -23,6 +23,8 @@ Currently, there is one that handles GET and POST requests:
 ```JSON
 localhost:3000/todo 
 
+localhost:3000/todo/{id}
+
 localhost:3000/todo?activity=<todo-item>
 ```
 
