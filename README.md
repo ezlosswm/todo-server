@@ -38,14 +38,14 @@ localhost:3000/todo?activity=<todo-item>
 *POST /todo*
 - Creates a new todo item 
 
-*DELETE /todo{id}*
-- Deletes the selected item from the list of todo 
 
 ```JSON
 {
     "todo": "test item"
 }
 ```
+*DELETE /todo{id}*
+- Deletes the selected item from the list of todo 
 
 
 ## Notes
