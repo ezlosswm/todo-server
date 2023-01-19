@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var listOfTodo TodoList
+var ListOfTodo TodoList
 
 type TodoItem struct {
 	ID          int       `json:"id"`
@@ -33,15 +33,10 @@ func NewTodo(activity string) *TodoList {
 	}
 }
 
-func (t *TodoList) GetItemByID(r *http.Request) (*TodoItem, error) {
-	id, err := getID(r)
-	if err != nil {
-		return nil, err
-	}
-
-	for itemID := range listOfTodo.Items {
-		if id == listOfTodo.Items[itemID].ID {
-			return &listOfTodo.Items[itemID], nil
+func (t *TodoList) GetItemByID(id int, list TodoList) (*TodoItem, error) {
+	for itemID := range list.Items {
+		if id == list.Items[itemID].ID {
+			return &list.Items[itemID], nil
 		}
 	}
 
@@ -59,11 +54,18 @@ func (t *TodoList) UpdateItem(item TodoList) *TodoList {
 	return nil
 }
 
-func (t *TodoList) DeleteItemByID(item TodoList) *TodoList {
-	return nil
+func (t *TodoList) DeleteItem(id int, list TodoList) error {
+	for i, todo := range list.Items {
+		if todo.ID == id {
+			list.Items = append(list.Items[:i], list.Items[i+1:]...)
+			return nil
+		}
+	}
+
+	return fmt.Errorf("id %s not found", strconv.Itoa(id))
 }
 
-func getID(r *http.Request) (int, error) {
+func GetID(r *http.Request) (int, error) {
 	// retrieves the id from the post data
 	idFromUser := mux.Vars(r)["id"]
 
