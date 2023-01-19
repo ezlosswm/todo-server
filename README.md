@@ -19,7 +19,7 @@ go run *.go
 
 ```
 ## Getting Started 
-Currently, there is one that handles GET and POST requests:  
+List of current endpoints on a browser.
 ```JSON
 localhost:3000/todo 
 
@@ -38,6 +38,9 @@ localhost:3000/todo?activity=<todo-item>
 *POST /todo*
 - Creates a new todo item 
 
+*DELETE /todo{id}*
+- Deletes the selected item from the list of todo 
+
 ```JSON
 {
     "todo": "test item"
@@ -48,7 +51,12 @@ localhost:3000/todo?activity=<todo-item>
 ## Notes
 - The server runs on port 3000
 - If you'd want to change the port navigate to `main.go` file and change the port number to the desired value.
-- The project is still in progress, endpoints for DELETE, UPDATE and GET BY ID. 
+- The project is still in progress, endpoints for PUT method. 
+- `make live` on the Makefile needs nodemond running to use; 
+```bash 
+# install nodeman using npm 
+npm install -g nodemon
+```
 
 
 ## Contact
