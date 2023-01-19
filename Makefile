@@ -3,3 +3,6 @@ build:
 
 run: build
 	@./bin/todoServer
+
+live: 
+	@nodemon --exec go run *.go --signal SIGTERM
