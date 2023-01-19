@@ -23,7 +23,7 @@ func (s *APIServer) Run() {
 	mux := mux.NewRouter()
 
 	// handler functions
-	mux.HandleFunc("/todo", handleTodo)
+	mux.HandleFunc("/todo", HandleTodo)
 	mux.HandleFunc("/todo/{id}", GetTodoByID)
 
 	//logs & runs server
