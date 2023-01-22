@@ -15,15 +15,6 @@ make run
 go run *.go 
 ```
 ## Getting Started 
-List of current endpoints on a browser.
-```JSON
-localhost:3000/todo 
-
-localhost:3000/todo/{id}
-
-localhost:3000/todo?activity=<todo-item>
-```
-
 ### Endpoints 
 *GET /todo* 
 - Returns all todo items
@@ -34,30 +25,67 @@ localhost:3000/todo?activity=<todo-item>
 *POST /todo*
 - Creates a new todo item 
 
-
 ```JSON
 {
     "todo": "test item"
 }
 ```
+
+*PUT /todo/{id}*
+- Allows the user to edit the todo without marking as completed. 
+
+```JSON
+// Befoee
+{
+  "items": [
+    {
+      "id": 81,
+      "activity": "go runnning",
+      "completed_at": "0001-01-01T00:00:00Z",
+      "completed": false
+    }
+  ]
+}
+
+// After
+{
+  "items": [
+    {
+      "id": 0,
+      "activity": "go running",
+      "completed_at": "0001-01-01T00:00:00Z",
+      "completed": false
+    }
+  ]
+}
+```
+
+*PATCH /todo/{id}*
+- Marks an item as completed and logs the time it was completed. 
+
 *DELETE /todo{id}*
 - Deletes the selected item from the list of todo 
 
 
 ## Notes
-- The server runs on port 3000
+- The server runs on port 3000.
 - If you'd want to change the port navigate to `main.go` file and change the port number to the desired value.
-- The project is still in progress, endpoints for PUT method. 
-- `make live` on the Makefile needs nodemond running to use; 
+- The project is still in progress.
+- Working on dockerizing. 
+- Will be refactoring in the near future. 
+- Wanting to link to a database eventually, preferably PostgresSQL.
+- `make live` on the Makefile needs nodemon running to use; 
 ```bash 
 # install nodeman using npm 
+# once installing nodemon, make live should be working
 npm install -g nodemon
+
 ```
 
 
 ## Contact
-[Twitter](https://twitter.com/EzlosSWM)
+Twitter: [@EzlosSWM](https://twitter.com/EzlosSWM)
 
-[Github](https://github.com/EzlosSWM)
+Github: [@EzlosSWM](https://github.com/EzlosSWM)
 
-> Email: ezlosswm@gmail.com
+Email: ezlosswm@gmail.com
