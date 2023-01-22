@@ -13,10 +13,6 @@ make run
 
 # Basic 
 go run *.go 
-
-# Binary 
-./bin/todoServer
-
 ```
 ## Getting Started 
 List of current endpoints on a browser.
