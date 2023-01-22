@@ -16,7 +16,8 @@ func NewTodo(activity string) *TodoList {
 			{
 				ID:          rand.Intn(100),
 				Activity:    activity,
-				CompletedAt: time.Now().UTC()},
+				CompletedAt: time.Time{},
+				Completed:   false},
 		},
 	}
 }
@@ -46,8 +47,25 @@ func (t *TodoList) UpdateItem(id int, newItem TodoItem) *TodoList {
 			todo.ID = newItem.ID
 			todo.Activity = newItem.Activity
 			todo.CompletedAt = newItem.CompletedAt
+			todo.Completed = newItem.Completed
 
 			t.Items[i] = newItem
+			break
+		}
+	}
+
+	return t
+}
+
+func (t *TodoList) CompleteItem(id int, completedItem []TodoItem) *TodoList {
+	for i, todo := range t.Items {
+		if todo.ID == id {
+			completedItem[i].CompletedAt = time.Now()
+			completedItem[i].Completed = true
+
+			todo.CompletedAt = completedItem[i].CompletedAt
+			todo.Completed = completedItem[i].Completed
+			break
 		}
 	}
 
