@@ -10,18 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var ListOfTodo TodoList
-
-type TodoItem struct {
-	ID          int       `json:"id"`
-	Activity    string    `json:"activity"`
-	CompletedAt time.Time `json:"completed_at"`
-}
-
-type TodoList struct {
-	Items []TodoItem `json:"items"`
-}
-
 func NewTodo(activity string) *TodoList {
 	return &TodoList{
 		Items: []TodoItem{
@@ -33,10 +21,10 @@ func NewTodo(activity string) *TodoList {
 	}
 }
 
-func (t *TodoList) GetItemByID(id int, list TodoList) (*TodoItem, error) {
-	for itemID := range list.Items {
-		if id == list.Items[itemID].ID {
-			return &list.Items[itemID], nil
+func (t *TodoList) GetItemByID(id int) (*TodoItem, error) {
+	for itemID := range t.Items {
+		if id == t.Items[itemID].ID {
+			return &t.Items[itemID], nil
 		}
 	}
 
@@ -50,14 +38,26 @@ func (t *TodoList) AddItem(item string) *TodoList {
 	return todoList
 }
 
-func (t *TodoList) UpdateItem(item TodoList) *TodoList {
-	return nil
+func (t *TodoList) UpdateItem(id int, newItem TodoItem) *TodoList {
+
+	for i, todo := range t.Items {
+		if todo.ID == id {
+
+			todo.ID = newItem.ID
+			todo.Activity = newItem.Activity
+			todo.CompletedAt = newItem.CompletedAt
+
+			t.Items[i] = newItem
+		}
+	}
+
+	return t
 }
 
-func (t *TodoList) DeleteItem(id int, list TodoList) error {
-	for i, todo := range list.Items {
+func (t *TodoList) DeleteItem(id int) error {
+	for i, todo := range t.Items {
 		if todo.ID == id {
-			list.Items = append(list.Items[:i], list.Items[i+1:]...)
+			t.Items = append(t.Items[:i], t.Items[i+1:]...)
 			return nil
 		}
 	}
