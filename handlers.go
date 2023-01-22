@@ -49,6 +49,18 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	WriteJson(w, http.StatusOK, l)
 }
 
+func CompleteTodo(w http.ResponseWriter, r *http.Request) {
+	json.NewDecoder(r.Body).Decode(&ListOfTodo)
+	defer r.Body.Close()
+
+	id, err := GetID(r)
+	if err != nil {
+		log.Print(err)
+	}
+
+	WriteJson(w, http.StatusOK, ListOfTodo.CompleteItem(id, ListOfTodo.Items))
+}
+
 func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 	// saves the id as a local variable
 	id, err := GetID(r)
@@ -73,5 +85,9 @@ func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "PUT" {
 		UpdateTodo(w, r)
+	}
+
+	if r.Method == "PATCH" {
+		CompleteTodo(w, r)
 	}
 }
