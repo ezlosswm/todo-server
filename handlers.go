@@ -34,6 +34,21 @@ func PostTodo(w http.ResponseWriter, r *http.Request) {
 	WriteJson(w, http.StatusOK, ListOfTodo)
 }
 
+func UpdateTodo(w http.ResponseWriter, r *http.Request) {
+	// var updatedTodo TodoItem
+	updatedTodo := new(TodoItem)
+	json.NewDecoder(r.Body).Decode(&updatedTodo)
+	defer r.Body.Close()
+
+	id, err := GetID(r)
+	if err != nil {
+		log.Print(err)
+	}
+
+	l := ListOfTodo.UpdateItem(id, *updatedTodo)
+	WriteJson(w, http.StatusOK, l)
+}
+
 func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 	// saves the id as a local variable
 	id, err := GetID(r)
@@ -42,7 +57,7 @@ func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "GET" {
-		item, err := ListOfTodo.GetItemByID(id, ListOfTodo)
+		item, err := ListOfTodo.GetItemByID(id)
 		if err != nil {
 			log.Println(err)
 
@@ -51,8 +66,12 @@ func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "DELETE" {
-		if err := ListOfTodo.DeleteItem(id, ListOfTodo); err != nil {
+		if err := ListOfTodo.DeleteItem(id); err != nil {
 			log.Println(err)
 		}
+	}
+
+	if r.Method == "PUT" {
+		UpdateTodo(w, r)
 	}
 }
