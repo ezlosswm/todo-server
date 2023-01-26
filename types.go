@@ -1,8 +1,15 @@
 package main
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 var ListOfTodo TodoList
+
+type APIServer struct {
+	listenAddr string
+}
 
 type TodoItem struct {
 	ID          int       `json:"id"`
@@ -13,4 +20,8 @@ type TodoItem struct {
 
 type TodoList struct {
 	Items []TodoItem `json:"items"`
+}
+
+func CheckErr(err error) {
+	log.Print(err)
 }

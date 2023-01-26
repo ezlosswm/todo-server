@@ -8,10 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type APIServer struct {
-	listenAddr string
-}
-
 func NewAPIServer(listenAddr int) *APIServer {
 	return &APIServer{
 		listenAddr: fmt.Sprintf(":%d", listenAddr),
@@ -24,13 +20,14 @@ func (s *APIServer) Run() {
 
 	// handler functions
 	mux.HandleFunc("/todo", HandleTodo)
-	mux.HandleFunc("/todo/{id}", GetTodoByID)
+	mux.HandleFunc("/todo/{id}", HandleTodoByID)
 
 	//logs & runs server
 	fmt.Printf("New API Server running on port %s\n", s.listenAddr)
 	http.ListenAndServe(s.listenAddr, mux)
 }
 
+// adds head & encodes json
 func WriteJson(w http.ResponseWriter, status int, v any) error {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)

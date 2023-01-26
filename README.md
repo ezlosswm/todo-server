@@ -69,10 +69,9 @@ go run *.go
 
 ## Notes
 - The server runs on port 3000.
-- If you'd want to change the port navigate to `main.go` file and change the port number to the desired value.
 - The project is still in progress.
 - Working on dockerizing. 
-- Will be refactoring in the near future. 
+- Wanting to return custom errors as json 
 - Wanting to link to a database eventually, preferably PostgresSQL.
 - `make live` on the Makefile needs nodemon running to use; 
 ```bash 
