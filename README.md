@@ -1,19 +1,23 @@
 # TODO API Server 
-### An easy-to-use RESTful Todo API written in Go with in memory storage.
+### An easy-to-use RESTful Todo API written in Go and PostgresSQL.
 
 ## Usage 
-```bash
-# Installation 
-go get https://github.com/EzlosSWM/todo-server
+1. Clone this repo 
+`git clone https://github.com/EzlosSWM/todo-server.git`
 
-cd todo-server
+2. Navigate to the directory 
+`cd todo-server`
 
-# Makefile
-make run 
+3. Download dependancies 
+`go mod download && go mod verify`
 
-# Basic 
-go run *.go 
-```
+4. Run
+    - (make)   
+      - `make live`
+    - (Go)   
+      - `go run *.go`
+
+
 ## Getting Started 
 ### Endpoints 
 *GET /todo* 
@@ -31,60 +35,39 @@ go run *.go
 }
 ```
 
-*PUT /todo/{id}*
-- Allows the user to edit the todo without marking as completed. 
-
-```JSON
-// Befoee
-{
-  "items": [
-    {
-      "id": 81,
-      "activity": "go runnning",
-      "completed_at": "0001-01-01T00:00:00Z",
-      "completed": false
-    }
-  ]
-}
-
-// After
-{
-  "items": [
-    {
-      "id": 0,
-      "activity": "go running",
-      "completed_at": "0001-01-01T00:00:00Z",
-      "completed": false
-    }
-  ]
-}
-```
-
-*PATCH /todo/{id}*
-- Marks an item as completed and logs the time it was completed. 
-
-*DELETE /todo{id}*
+*DELETE /todo/{id}*
 - Deletes the selected item from the list of todo 
 
+## Database (Postgres)
+The database in use is PostgresSQL. The API will not run if you don't have a `.env` in this root directory. You can use the template below: 
+1. Create **.env** file. `touch .env`
+
+2. Add environment variables to **.env** file
+```
+HOSTADDR=localhost
+USER_NAME=
+DB_NAME=
+PASSWORD=
+```
+*Note*: for development puposes, `HOSTADDR` is the localhost and should not be changed.
 
 ## Notes
 - The server runs on port 3000.
 - The project is still in progress.
 - Working on dockerizing. 
 - Wanting to return custom errors as json 
-- Wanting to link to a database eventually, preferably PostgresSQL.
 - `make live` on the Makefile needs nodemon running to use; 
-```bash 
-# install nodeman using npm 
-# once installing nodemon, make live should be working
-npm install -g nodemon
+  - Install nodemon using npm 
+`npm install -g nodemon`
 
-```
+*Once installed, `make live` should work normally.*
 
 
 ## Contact
 Twitter: [@EzlosSWM](https://twitter.com/EzlosSWM)
 
 Github: [@EzlosSWM](https://github.com/EzlosSWM)
+
+[Socials](https://ezlos-redirect.vercel.app/)
 
 Email: ezlosswm@gmail.com
