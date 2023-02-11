@@ -2,100 +2,99 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
-// handles general GET and POST requests
-func HandleTodo(w http.ResponseWriter, r *http.Request) {
+// handles requests made to /todo
+func (s *APIServer) HandleTodo(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
-		GetTodo(w, r)
+		return s.HandleGetTodo(w, r)
 	case "POST":
-		PostTodo(w, r)
+		return s.HandlePostTodo(w, r)
 	}
+
+	return fmt.Errorf("method not allowed %s", r.Method)
 }
 
-// handles all methods that reacts to a specified todo item
-func HandleTodoByID(w http.ResponseWriter, r *http.Request) {
+// handles requests mde to todo/{id}
+func (s *APIServer) HandleTodoByID(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case "GET":
-		GetTodoByID(w, r)
+		return s.HandleGetTodoByID(w, r)
 	case "DELETE":
-		DeleteTodo(w, r)
-	case "PUT":
-		UpdateTodo(w, r)
-	case "PATCH":
-		CompleteTodo(w, r)
-	}
-}
-
-// handler func for retreiving all items
-func GetTodo(w http.ResponseWriter, r *http.Request) {
-	WriteJson(w, http.StatusOK, ListOfTodo)
-}
-
-// handler func returns a todo item specified by id
-func GetTodoByID(w http.ResponseWriter, r *http.Request) {
-	id, err := GetID(r)
-	CheckErr(err)
-
-	item, err := ListOfTodo.GetItemByID(id)
-	CheckErr(err)
-
-	WriteJson(w, http.StatusOK, item)
-}
-
-// POST methods
-func PostTodo(w http.ResponseWriter, r *http.Request) {
-	item := new(TodoItem)
-
-	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-		log.Print(err)
+		return s.DeleteTodo(w, r)
 	}
 
-	ListOfTodo.AddItem(item.Activity)
-
-	WriteJson(w, http.StatusOK, ListOfTodo)
+	return fmt.Errorf("method not allowed %s", r.Method)
 }
 
-// allows edits to be made to a specifed todo item
-func UpdateTodo(w http.ResponseWriter, r *http.Request) {
-	updatedTodo := new(TodoItem)
+func (s *APIServer) HandleGetTodo(w http.ResponseWriter, r *http.Request) error {
+	todos, err := s.store.GetTodos()
+	if err != nil {
+		return err
+	}
 
-	json.NewDecoder(r.Body).Decode(&updatedTodo)
-	defer r.Body.Close()
-
-	id, err := GetID(r)
-	CheckErr(err)
-
-	newTodoList, err := ListOfTodo.UpdateItem(id, *updatedTodo)
-	CheckErr(err)
-
-	WriteJson(w, http.StatusOK, newTodoList)
+	return WriteJson(w, http.StatusOK, todos)
 }
 
-// makes todo items as completed
-func CompleteTodo(w http.ResponseWriter, r *http.Request) {
-	json.NewDecoder(r.Body).Decode(&ListOfTodo)
-	defer r.Body.Close()
+func (s *APIServer) HandleGetTodoByID(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
+	if err != nil {
+		return err
+	}
 
-	id, err := GetID(r)
-	CheckErr(err)
+	item, err := s.store.GetTodoByID(id)
+	if err != nil {
+		return err
+	}
 
-	completed, err := ListOfTodo.CompleteItem(id, ListOfTodo.Items)
-	CheckErr(err)
-
-	WriteJson(w, http.StatusOK, completed)
+	return WriteJson(w, http.StatusOK, item)
 }
 
-// deletes a todo item based on specified id
-func DeleteTodo(w http.ResponseWriter, r *http.Request) {
-	id, err := GetID(r)
-	CheckErr(err)
+func (s *APIServer) HandlePostTodo(w http.ResponseWriter, r *http.Request) error {
+	req := new(TodoReq)
 
-	newTodos, err := ListOfTodo.DeleteItem(id)
-	CheckErr(err)
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return err
+	}
 
-	WriteJson(w, http.StatusOK, newTodos)
+	todo := NewTodo(req.Item, req.CreatedAt)
+
+	err := s.store.CreateTodo(todo)
+	if err != nil {
+		return err
+	}
+
+	return WriteJson(w, http.StatusOK, todo)
+}
+
+func (s *APIServer) DeleteTodo(w http.ResponseWriter, r *http.Request) error {
+	id, err := getID(r)
+	if err != nil {
+		return err
+	}
+
+	if err = s.store.DeleteTodo(id); err != nil {
+		return err
+	}
+
+	return WriteJson(w, http.StatusOK, map[string]int{"deleted item:": id})
+}
+
+// reads the id input field and converts to int
+// 400 represents invalid id
+func getID(r *http.Request) (int, error) {
+	idFromUser := mux.Vars(r)["id"]
+
+	id, err := strconv.Atoi(idFromUser)
+	if err != nil {
+		return 404, fmt.Errorf("invalid id: %v", id)
+	}
+
+	return id, nil
 }

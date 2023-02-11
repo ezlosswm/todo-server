@@ -8,9 +8,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewAPIServer(listenAddr int) *APIServer {
+type APIServer struct {
+	ListenAddr string
+	store      Storager
+}
+
+func NewAPIServer(listenAddr int, store Storager) *APIServer {
 	return &APIServer{
-		listenAddr: fmt.Sprintf(":%d", listenAddr),
+		ListenAddr: fmt.Sprintf(":%d", listenAddr),
+		store:      store,
 	}
 }
 
@@ -19,12 +25,12 @@ func (s *APIServer) Run() {
 	mux := mux.NewRouter()
 
 	// handler functions
-	mux.HandleFunc("/todo", HandleTodo)
-	mux.HandleFunc("/todo/{id}", HandleTodoByID)
+	mux.HandleFunc("/todo", makeHandlerFunc(s.HandleTodo))
+	mux.HandleFunc("/todo/{id}", makeHandlerFunc(s.HandleTodoByID))
 
 	//logs & runs server
-	fmt.Printf("New API Server running on port %s\n", s.listenAddr)
-	http.ListenAndServe(s.listenAddr, mux)
+	fmt.Printf("New API Server running on port %s\n", s.ListenAddr)
+	http.ListenAndServe(s.ListenAddr, mux)
 }
 
 // adds head & encodes json
@@ -33,4 +39,16 @@ func WriteJson(w http.ResponseWriter, status int, v any) error {
 	w.WriteHeader(status)
 
 	return json.NewEncoder(w).Encode(v)
+}
+
+// holds handle function signature
+type apiHandler func(http.ResponseWriter, *http.Request) error
+
+// converts apiHandler to http.HandlerFunc
+func makeHandlerFunc(h apiHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := h(w, r); err != nil {
+			WriteJson(w, http.StatusBadRequest, err)
+		}
+	}
 }
