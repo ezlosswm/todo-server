@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -18,6 +19,7 @@ type Storager interface {
 	GetTodoByID(int) (*TodoList, error)
 	CreateTodo(*TodoList) error
 	DeleteTodo(int) error
+	UpdateTodo(int) error
 }
 
 type DBConfig struct {
@@ -102,6 +104,8 @@ func (s *PostgresStore) CreateTodo(todo *TodoList) error {
 	(item, created_at, completed)
 	values ($1, $2, $3)`
 
+	todo.CreatedAt = time.Now()
+
 	_, err := s.db.Query(
 		query,
 		todo.Item,
@@ -117,6 +121,23 @@ func (s *PostgresStore) CreateTodo(todo *TodoList) error {
 func (s *PostgresStore) DeleteTodo(id int) error {
 	_, err := s.db.Query("delete from todo where id = $1", id)
 	return err
+}
+
+func (s *PostgresStore) UpdateTodo(id int) error {
+	query := `update todo set completed = $1 where id = $2`
+	updatedTodo, err := s.db.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer updatedTodo.Close()
+
+	_, err = updatedTodo.Exec(true, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // turns scanned sql items into TodoList struct
