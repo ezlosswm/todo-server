@@ -38,6 +38,9 @@
 *DELETE /todo/{id}*
 - Deletes the selected item from the list of todo 
 
+*PUT /todo/{id}*
+- Marks an item as completed
+
 ## Database (Postgres)
 The database in use is PostgresSQL. The API will not run if you don't have a `.env` in this root directory. You can use the template below: 
 1. Create **.env** file. `touch .env`
