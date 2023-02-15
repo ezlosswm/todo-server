@@ -40,8 +40,6 @@ func NewPostgresStore() (*PostgresStore, error) {
 		return nil, err
 	}
 
-	db.Close()
-
 	if err := db.Ping(); err != nil {
 		return nil, err
 
